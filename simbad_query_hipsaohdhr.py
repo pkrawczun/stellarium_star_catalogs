@@ -1,5 +1,6 @@
 import pathlib
 import tqdm
+import math
 from astropy.table import Table, vstack
 
 from py.utils import custom_simbad
@@ -30,7 +31,7 @@ for subdir, max_id, combined_path in zip(
     if combined_path.exists():  # if the combined file already exists, skip
         print(f"Skipping {subdir.name} as the combined file already exists. If you want to re-query, delete the combined file.")
         continue
-    for batch in tqdm.tqdm(range(max_id // query_batch_size + 1), desc=f"Querying {subdir.name}"):
+    for batch in tqdm.tqdm(range(math.ceil(max_id / query_batch_size)), desc=f"Querying {subdir.name}"):
         max_id_clipped = min(max_id, batch * query_batch_size + query_batch_size)
         ids = [f"{subdir.name.upper()} {str(i)}".strip() for i in range(1 + batch * query_batch_size, 1 + max_id_clipped)]
         result = custom_simbad.query_objects(ids)
